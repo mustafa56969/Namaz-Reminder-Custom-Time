@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prayer OS - Auto Time</title>
+    
+    <!-- Google Fonts: Cairo (Ultra Arabic), Tajawal (Clean Arabic), Google Sans (English) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Google+Sans:wght@400;500;700&family=Tajawal:wght@400;500;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+
+    <style>
+        :root {
+            /* --- Dynamic Color System --- */
+            --dynamic-hue: 45; 
+
+            /* Light Mode Colors */
+            --color-primary: hsl(var(--dynamic-hue), 90%, 45%);
+            --color-on-primary: #FFFFFF;
+            --color-primary-container: hsl(var(--dynamic-hue), 60%, 90%);
+            --color-on-primary-container: hsl(var(--dynamic-hue), 30%, 10%);
+            
+            --color-surface: hsl(var(--dynamic-hue), 20%, 98%);
+            --color-surface-variant: hsl(var(--dynamic-hue), 10%, 94%);
+            --color-on-surface: hsl(var(--dynamic-hue), 20%, 20%);
+            --color-on-surface-variant: hsl(var(--dynamic-hue), 10%, 40%);
+
+            /* Fonts */
+            --font-header: 'Cairo', sans-serif;      /* Ultra Arabic */
+            --font-list: 'Tajawal', sans-serif;     /* Clean Arabic */
+            --font-ui: 'Google Sans', sans-serif;   /* English UI */
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            --color-surface: hsl(var(--dynamic-hue), 20%, 8%);
+            --color-surface-variant: hsl(var(--dynamic-hue), 20%, 15%);
+            --color-on-surface: hsl(var(--dynamic-hue), 10%, 95%);
+            --color-on-surface-variant: hsl(var(--dynamic-hue), 10%, 70%);
+            
+            --color-primary: hsl(var(--dynamic-hue), 80%, 60%);
+            --color-on-primary: hsl(var(--dynamic-hue), 20%, 10%);
+            --color-primary-container: hsl(var(--dynamic-hue), 40%, 20%);
+            --color-on-primary-container: hsl(var(--dynamic-hue), 90%, 90%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--color-surface);
+            color: var(--color-on-surface);
+            font-family: var(--font-ui);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            overflow: hidden;
+        }
+
+        /* Ambient Blobs */
+        .ambient-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;
+        }
+        .blob {
+            position: absolute; border-radius: 50%; filter: blur(80px); background: var(--color-primary); opacity: 0.3; transition: background 0.8s ease;
+        }
+        .blob-1 { width: 350px; height: 350px; top: -50px; left: -50px; }
+        .blob-2 { width: 300px; height: 300px; bottom: 0; right: -50px; }
+
+        .app-container {
+            width: 100%; max-width: 400px; height: 100%; max-height: 900px; position: relative; z-index: 1; display: flex; flex-direction: column;
+        }
+
+        /* --- Header & Widget --- */
+        header { padding: 40px 24px 20px 24px; }
+
+        .date-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .date-text { font-size: 14px; font-weight: 600; color: var(--color-on-surface-variant); text-transform: uppercase; letter-spacing: 1px; }
+        
+        .theme-toggle {
+            background: var(--color-surface-variant); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; color: var(--color-on-surface); display: flex; align-items: center; justify-content: center;
+        }
+
+        .hero-widget {
+            background: var(--color-primary-container); border-radius: 48px; padding: 40px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15); transition: background 0.6s ease;
+        }
+
+        .hero-label { font-size: 12px; font-weight: 700; color: var(--color-on-primary-container); opacity: 0.8; letter-spacing: 1.5px; margin-bottom: 12px; }
+
+        /* Ultra Font Cairo (Black) */
+        .hero-arabic { 
+            font-family: var(--font-header); 
+            font-size: 64px; 
+            font-weight: 900; 
+            color: var(--color-on-primary-container); 
+            line-height: 1; 
+            margin-bottom: 8px; 
+            letter-spacing: -1px;
+        }
+
+        /* 12H Format Time */
+        .hero-time {
+            font-family: var(--font-ui);
+            font-size: 36px; 
+            font-weight: 500; 
+            color: var(--color-on-primary-container); 
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* --- List --- */
+        .list-container { flex: 1; padding: 24px; overflow-y: auto; padding-bottom: 100px; }
+
+        .prayer-item {
+            background: var(--color-surface); border: 1px solid var(--color-surface-variant); border-radius: 24px; padding: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.2, 0.0, 0, 1);
+        }
+
+        .prayer-item:hover { transform: translateY(-2px); background: var(--color-surface-variant); }
+
+        /* Active State */
+        .prayer-item.active {
+            background: var(--color-primary-container); border-color: var(--color-primary); transform: scale(1.03); box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .item-left { display: flex; align-items: center; gap: 16px; }
+
+        .item-icon {
+            width: 40px; height: 40px; border-radius: 14px; background: rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; color: var(--color-primary); transition: all 0.4s;
+        }
+        
+        .active .item-icon { background: var(--color-primary); color: var(--color-on-primary); }
+
+        .item-text { display: flex; flex-direction: column; }
+        
+        .item-en { font-size: 14px; font-weight: 500; color: var(--color-on-surface); }
+        
+        .item-ar { 
+            font-family: var(--font-list); 
+            font-size: 16px; 
+            font-weight: 700; 
+            color: var(--color-on-surface-variant); 
+        }
+        
+        /* Active item text color */
+        .active .item-en, .active .item-ar { color: var(--color-on-primary-container); opacity: 0.9; }
+
+        .item-time {
+            font-family: var(--font-ui);
+            font-size: 16px; 
+            font-weight: 700; 
+            color: var(--color-on-surface); 
+            font-variant-numeric: tabular-nums;
+        }
+
+        .material-symbols-rounded { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .active .material-symbols-rounded { font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24; }
+
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="app-container">
+        <header>
+            <div class="date-row">
+                <span class="date-text" id="current-date">...</span>
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span class="material-symbols-rounded">dark_mode</span>
+                </button>
+            </div>
+
+            <div class="hero-widget">
+                <div class="hero-label">NEXT PRAYER</div>
+                <div class="hero-arabic" id="hero-name">...</div>
+                <div class="hero-time" id="hero-time">...</div>
+            </div>
+        </header>
+
+        <div class="list-container" id="list-root">
+            <!-- Items injected via JS -->
+        </div>
+    </div>
+
+    <script>
+        // --- Data (Using 24h format for logic, displayed as 12h) ---
+        // Hue values for dynamic theming
+        const prayers = [
+            { id: 'Fajr', en: 'Fajr', ar: 'الفجر', time: '05:12', hue: 210, icon: 'wb_twilight' },
+            { id: 'Dhuhr', en: 'Dhuhr', ar: 'الظهر', time: '12:30', hue: 45, icon: 'light_mode' },
+            { id: 'Asr', en: 'Asr', ar: 'العصر', time: '15:45', hue: 25, icon: 'partly_cloudy_day' },
+            { id: 'Maghrib', en: 'Maghrib', ar: 'المغرب', time: '18:10', hue: 340, icon: 'nights_stay' },
+            { id: 'Isha', en: 'Isha', ar: 'العشاء', time: '19:40', hue: 260, icon: 'bedtime' }
+        ];
+
+        let activeId = null;
+
+        // --- Time & Format Logic ---
+
+        // Convert "15:45" to "3:45 PM"
+        function formatTime12h(time24) {
+            const [hours, minutes] = time24.split(':').map(Number);
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const h12 = hours % 12 || 12;
+            const mStr = minutes.toString().padStart(2, '0');
+            return `${h12}:${mStr} ${ampm}`;
+        }
+
+        // Get the NEXT prayer based on current system time
+        function determineNextPrayer() {
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+            // Sort prayers by time (just in case)
+            const sorted = [...prayers].sort((a, b) => {
+                return parseInt(a.time.replace(':','')) - parseInt(b.time.replace(':',''));
+            });
+
+            let nextPrayer = sorted[0]; // Default to first (Fajr tomorrow)
+
+            for (let p of sorted) {
+                const [h, m] = p.time.split(':').map(Number);
+                const pMinutes = h * 60 + m;
+
+                if (pMinutes > currentMinutes) {
+                    nextPrayer = p;
+                    break;
+                }
+            }
+            return nextPrayer.id;
+        }
+
+        function updateDate() {
+            const now = new Date();
+            const options = { weekday: 'long', month: 'short', day: 'numeric' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        // --- Core Interaction ---
+
+        function activatePrayer(id) {
+            const data = prayers.find(p => p.id === id);
+            if (!data) return;
+            
+            activeId = id;
+
+            // 1. Dynamic Hue Change
+            document.documentElement.style.setProperty('--dynamic-hue', data.hue);
+
+            // 2. Update Widget
+            document.getElementById('hero-name').textContent = data.ar;
+            document.getElementById('hero-time').textContent = formatTime12h(data.time);
+
+            // 3. Update List Active State
+            const items = document.querySelectorAll('.prayer-item');
+            items.forEach(item => {
+                if (item.dataset.id === id) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        function renderList() {
+            const root = document.getElementById('list-root');
+            root.innerHTML = '';
+
+            prayers.forEach(p => {
+                const el = document.createElement('div');
+                el.className = 'prayer-item';
+                el.dataset.id = p.id;
+                
+                // Click to manually change active (changes color theme)
+                el.onclick = () => activatePrayer(p.id);
+
+                el.innerHTML = `
+                    <div class="item-left">
+                        <div class="item-icon">
+                            <span class="material-symbols-rounded">${p.icon}</span>
+                        </div>
+                        <div class="item-text">
+                            <span class="item-en">${p.en}</span>
+                            <span class="item-ar">${p.ar}</span>
+                        </div>
+                    </div>
+                    <span class="item-time">${formatTime12h(p.time)}</span>
+                `;
+                root.appendChild(el);
+            });
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.theme-toggle span');
+            const isDark = document.body.classList.contains('dark-mode');
+            icon.textContent = isDark ? 'light_mode' : 'dark_mode';
+        }
+
+        // --- Initialization ---
+        function init() {
+            updateDate();
+            renderList();
+            
+            // Automatically find the next prayer based on real time
+            const nextId = determineNextPrayer();
+            activatePrayer(nextId);
+        }
+
+        init();
+
+    </script>
+</body>
+</html>

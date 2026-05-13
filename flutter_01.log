@@ -1,0 +1,91 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter pub get
+
+## exception
+
+PathAccessException: PathAccessException: Cannot create link, path = '/storage/emulated/0/projects/reminder_app/windows/flutter/ephemeral/.plugin_symlinks/path_provider_windows' (OS Error: strerror_r failed, errno = 13)
+
+```
+#0      _Link.throwIfError (dart:io/link.dart:357:7)
+#1      _Link.createSync (dart:io/link.dart:275:5)
+#2      ForwardingLink.createSync (package:file/src/forwarding/forwarding_link.dart:20:16)
+#3      ForwardingLink.createSync (package:file/src/forwarding/forwarding_link.dart:20:16)
+#4      _createPlatformPluginSymlinks (package:flutter_tools/src/flutter_plugins.dart:1111:12)
+#5      createPluginSymlinks (package:flutter_tools/src/flutter_plugins.dart:1027:5)
+#6      refreshPluginsList (package:flutter_tools/src/flutter_plugins.dart:1167:5)
+<asynchronous suspension>
+#7      FlutterProject.ensureReadyForPlatformSpecificTooling (package:flutter_tools/src/project.dart:368:5)
+<asynchronous suspension>
+#8      PackagesGetCommand.runCommand (package:flutter_tools/src/commands/packages.dart:388:7)
+<asynchronous suspension>
+#9      FlutterCommand.run.<anonymous closure> (package:flutter_tools/src/runner/flutter_command.dart:1558:27)
+<asynchronous suspension>
+#10     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#11     CommandRunner.runCommand (package:args/command_runner.dart:212:13)
+<asynchronous suspension>
+#12     FlutterCommandRunner.runCommand.<anonymous closure> (package:flutter_tools/src/runner/flutter_command_runner.dart:496:9)
+<asynchronous suspension>
+#13     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#14     FlutterCommandRunner.runCommand (package:flutter_tools/src/runner/flutter_command_runner.dart:431:5)
+<asynchronous suspension>
+#15     run.<anonymous closure>.<anonymous closure> (package:flutter_tools/runner.dart:98:11)
+<asynchronous suspension>
+#16     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#17     main (package:flutter_tools/executable.dart:99:3)
+<asynchronous suspension>
+```
+
+## flutter doctor
+
+```
+[!] Flutter (Channel [user-branch], 3.29.2, on Linux 5.4.210-android12-9-gd9b32e55273a-ab585, locale en_US.UTF-8) [192ms]
+    ! Flutter version 3.29.2 on channel [user-branch] at /data/data/com.termux/files/usr/opt/flutter
+      Currently on an unknown channel. Run `flutter channel` to switch to an official channel.
+      If that doesn't fix the issue, reinstall Flutter by following instructions at https://flutter.dev/setup.
+    ! Warning: `flutter` on your path resolves to /data/data/com.termux/files/usr/bin/flutter, which is not inside your current Flutter SDK checkout at /data/data/com.termux/files/usr/opt/flutter. Consider adding /data/data/com.termux/files/usr/opt/flutter/bin to the front of your path.
+    ! The dart binary is not on your path. Consider adding /data/data/com.termux/files/usr/opt/flutter/bin to your path.
+    ! Upstream repository unknown source is not a standard remote.
+      Set environment variable "FLUTTER_GIT_URL" to unknown source to dismiss this error.
+    • Framework revision c236373904 (10 months ago), 2025-03-13 16:17:06 -0400
+    • Engine revision 18b71d647a
+    • Dart version 3.7.2
+    • DevTools version 2.42.0
+    • If those were intentional, you can disregard the above warnings; however it is recommended to use "git" directly to perform update checks and upgrades.
+
+[✗] Android toolchain - develop for Android devices [89ms]
+    ✗ Unable to locate Android SDK.
+      Install Android Studio from: https://developer.android.com/studio/index.html
+      On first launch it will assist you in installing the Android SDK components.
+      (or visit https://flutter.dev/to/linux-android-setup for detailed instructions).
+      If the Android SDK has been installed to a custom location, please use
+      `flutter config --android-sdk` to update to that location.
+
+
+[✗] Chrome - develop for the web (Cannot find Chrome executable at google-chrome) [47ms]
+    ! Cannot find Chrome. Try setting CHROME_EXECUTABLE to a Chrome executable.
+
+[✓] Linux toolchain - develop for Linux desktop [981ms]
+    • clang version 21.1.6
+    • cmake version 4.2.0
+    • ninja version 1.13.2
+    • pkg-config version 0.29.2
+
+[!] Android Studio (not installed) [31ms]
+    • Android Studio not found; download from https://developer.android.com/studio/index.html
+      (or visit https://flutter.dev/to/linux-android-setup for detailed instructions).
+
+[✓] Connected device (1 available) [80ms]
+    • Linux (desktop) • linux • linux-arm64 • Linux 5.4.210-android12-9-gd9b32e55273a-ab585
+
+[✓] Network resources [3.1s]
+    • All expected network resources are available.
+
+! Doctor found issues in 4 categories.
+```
